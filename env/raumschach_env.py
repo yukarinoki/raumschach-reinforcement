@@ -1,8 +1,10 @@
 import sys
+from copy import copy
 
 import gym
 import numpy as np
 from gym import spaces, error, utils
+from gym.utils import seeding
 
 
 # _step(self, action)	    action を実行し、結果を返す
@@ -25,6 +27,11 @@ pieces_to_ids = {
     'u1': -10, 'b1': -11, 'q': -12, 'u2': -13, 'b2': -14,
     'p7': -15, 'p2': -16, 'p8': -17, 'p9': -18, 'p10': -19,
     '.': 0
+}
+uniDict = {
+	'p': "♙", 'r': "♖", 'n': "♘", 'b': "♗", 'k': "♔", 'q': "♕", 'u': "🦄",
+	'P': "♟", 'R': "♜", 'N': "♞", 'B': "♝", 'K': "♚", 'Q': "♛" , 'U': "🦄",
+	'.': '.'
 }
 
 def make_random_policy(np_random):
@@ -51,11 +58,67 @@ class RaumschachEnv(gym.Env) :
         self.opponent = opponent # define opponent
 
         # reset and build state
-        self._seed()
+        # self._seed()
         self._reset()
-    
-    def _seed(self):
+        self._render()
+   	
+    def _seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        # Update the random policy if needed
+        if isinstance(self.opponent, str):
+            if self.opponent == 'random':
+                self.opponent_policy = make_random_policy(self.np_random)
+            elif self.opponent == 'none':
+                self.opponent_policy = None
+            else:
+                raise error.Error('Unrecognized opponent policy {}'.format(self.opponent))
+        else:
+            self.opponent_policy = self.opponent
+
+        return [seed]
 
     def _reset(self):
+		# reset pieces (pawns that became queen become pawns again)
+        RaumschachEnv.ids_to_pieces = {v: k for k, v in pieces_to_ids.items()}
+		# vars
+        self.state = {}
+        self.done = False
+        self.current_player = 1
+        self.saved_states = {}
+        self.repetitions = 0     # 3 repetitions ==> DRAW
+        # register king's and rooks' (and all other pieces) moves
+        pieces = np.linspace(1, 20, 20, dtype=int)
+        self.state['kr_moves'] = {**{p: 0 for p in pieces}, **{-p: 0 for p in pieces}} 
+		# material captured
+        self.state['captured'] = {1: [], -1: []}
+		# current move
+        self.state['on_move'] = 1
+        # Board
+        board = [[['R1', 'N1', 'K', 'N2', 'R2'], ['P1', 'P2', 'P3', 'P4', 'P5']] + [['.']*5] * 3]
+        board += [[['U1', 'B1', 'Q', 'U1', 'B1'],  ['P1', 'P2', 'P3', 'P4', 'P5']] + [['.']*5] * 3]
+        board += [[['.']*5] * 5]
+        board += [[['.']*5] * 3 + [ ['p1', 'p2', 'p3', 'p4', 'p5'], ['u1', 'b1', 'q', 'u1', 'b1']]]
+        board += [[['.']*5] * 3 + [ ['p1', 'p2', 'p3', 'p4', 'p5'], ['r1', 'n1', 'k', 'n2', 'r2']]]
+        self.state['board'] = np.array([[[pieces_to_ids[x] for x in row] for row in layer] for layer in board])
+        self.state['prev_board'] = copy(self.state['board'])
+        return self.state
+
+    def _render(self, mode='human', close=False):
+        cb = self.state['board'] 
+        layer_index_arr = ['A', 'B', 'C', 'D', 'E']
+        row_index_arr = ['1', '2', '3', '4', '5']
+        column_index_arr = ['a', 'b', 'c', 'd', 'e']
+
+        for l in range(5):
+            print(layer_index_arr[l])
+            print('   ', end='')
+            for c in range(5):  print(column_index_arr[c], end='  ')
+            print(" ")
+            for r in range(5):
+                print(row_index_arr[r], end='  ')
+                for c in range(5):  print(uniDict[RaumschachEnv.ids_to_pieces[cb[l][r][c]][0]], end='  ')
+                print("\n")
+            print("\n")   
+        print("//// board rendering  ////")
 
     
