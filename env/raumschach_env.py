@@ -154,10 +154,20 @@ def generate_king_moves(self, l, r, c, state, player):
     moves = []
     for (dx,dy,dz) in dif_array:
         if check_position_validity(l + dx, r + dy, c + dz, state, player):
-            moves += [(state["board"][l][r][c], (l + dx))]
-    return []
+            moves += [(state["board"][l][r][c], (l + dx, r + dy, c + dz))]
+    return moves
 def generate_queen_moves(self,l,r,c,state, player):
-    return []
+    dif_array =   [(dx,dy,dz) for dx in range(-1,2) for dy in range(-1,2) for dz in range(-1,2)].remove((0,0,0))
+    moves = []
+    for (dx,dy,dz) in dif_array:
+        for k in range(1, 4):
+            (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
+            if check_movable(nx,ny,nz,state, player:
+                moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
+            elif not check_position_validity(nx,ny,nz):
+                break
+    return moves
+    
 def generate_rook_moves(self, l,r,c,state, player):
     return []
 def generate_bishop_moves(self, l,r,c,state, player):
