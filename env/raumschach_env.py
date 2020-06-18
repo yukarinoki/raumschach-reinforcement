@@ -123,7 +123,7 @@ class RaumschachEnv(gym.Env) :
                 print("\n")
             print("\n")   
         print("//// board rendering  ////")
-    def get_possible_moves(state, player):
+    def get_possible_moves(self, state, player):
         moves = []
         for l in range(5):
             for r in range(5):
