@@ -33,6 +33,9 @@ uniDict = {
 	'P': "♟", 'R': "♜", 'N': "♞", 'B': "♝", 'K': "♚", 'Q': "♛" , 'U': "🦄",
 	'.': '.'
 }
+def check_position_validity(l,r,c):
+    arr = [0,1,2,3,4]
+    return l in arr and r in arr and c in arr
 
 def make_random_policy(np_random):
     def random_policy(state):
@@ -120,5 +123,41 @@ class RaumschachEnv(gym.Env) :
                 print("\n")
             print("\n")   
         print("//// board rendering  ////")
+def get_possible_moves(state, player):
+    moves = []
+    for l in range(5):
+        for r in range(5):
+            for c in range(5):
+                pi = RaumschachEnv.ids_to_pieces[state["board"][l][r][c]][0]
+                if (pi.islower() and player == -1) or (pi.isupper() and player == 1):
+                    tp = pi.upper()
+                    if tp == 'K':
+                        moves += generate_king_moves(l,r,c, state, player)
+                    elif tp == 'Q':
+                        moves += generate_queen_moves(l,r,c, state, player)
+                    elif tp == 'R':
+                        moves += generate_rook_moves(l,r,c, state, player)
+                    elif tp == 'B':
+                        moves += generate_bishop_moves(l,r,c, state, player)
+                    elif tp == 'N':
+                        moves += generate_knight_moves(l,r,c, state, player)
+                    elif tp == 'U':
+                        moves += generate_unicorn_moves(l,r,c, state, player)
+                    elif tp == 'P':
+                        moves += generate_pawn_moves(l,r,c, state, player)
+    return moves
 
-    
+def generate_king_moves(self, l, r, c, state, player):
+    return []
+def generate_queen_moves(self, l,r,c,state, player):
+    return []
+def generate_rook_moves(self, l,r,c,state, player):
+    return []
+def generate_bishop_moves(self, l,r,c,state, player):
+    return []
+def generate_knight_moves(self, l,r,c,state, player):
+    return []
+def generate_unicorn_moves(self, l,r,c,state, player):
+    return []
+def generate_pawn_moves(self, l,r,c,state, player):
+    return []

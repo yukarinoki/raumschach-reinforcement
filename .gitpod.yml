@@ -2,5 +2,5 @@ image:
   file: .gitpod.Dockerfile
   
 tasks:
-  - init: pip3 install -r /workspace/raumschach-reinforcement/requirments.txt 
+  - prebuild: pip3 install -r /workspace/raumschach-reinforcement/requirments.txt 
   
