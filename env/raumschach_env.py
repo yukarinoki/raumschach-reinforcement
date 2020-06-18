@@ -146,10 +146,17 @@ def get_possible_moves(state, player):
                     elif tp == 'P':
                         moves += generate_pawn_moves(l,r,c, state, player)
     return moves
+def check_movable(self,l,r,c,state,player):
+        return check_position_validity(l,r,c) and ((player < 0 and state["board"] >= 0) or (player > 0 and state["board"] <= 0))
 
 def generate_king_moves(self, l, r, c, state, player):
+    dif_array =   [(dx,dy,dz) for dx in range(-1,2) for dy in range(-1,2) for dz in range(-1,2)].remove((0,0,0))
+    moves = []
+    for (dx,dy,dz) in dif_array:
+        if check_position_validity(l + dx, r + dy, c + dz, state, player):
+            moves += [(state["board"][l][r][c], (l + dx))]
     return []
-def generate_queen_moves(self, l,r,c,state, player):
+def generate_queen_moves(self,l,r,c,state, player):
     return []
 def generate_rook_moves(self, l,r,c,state, player):
     return []
