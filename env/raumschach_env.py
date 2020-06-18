@@ -123,111 +123,112 @@ class RaumschachEnv(gym.Env) :
                 print("\n")
             print("\n")   
         print("//// board rendering  ////")
-def get_possible_moves(state, player):
-    moves = []
-    for l in range(5):
-        for r in range(5):
-            for c in range(5):
-                pi = RaumschachEnv.ids_to_pieces[state["board"][l][r][c]][0]
-                if (pi.islower() and player == -1) or (pi.isupper() and player == 1):
-                    tp = pi.upper()
-                    if tp == 'K':
-                        moves += generate_king_moves(l,r,c, state, player)
-                    elif tp == 'Q':
-                        moves += generate_queen_moves(l,r,c, state, player)
-                    elif tp == 'R':
-                        moves += generate_rook_moves(l,r,c, state, player)
-                    elif tp == 'B':
-                        moves += generate_bishop_moves(l,r,c, state, player)
-                    elif tp == 'N':
-                        moves += generate_knight_moves(l,r,c, state, player)
-                    elif tp == 'U':
-                        moves += generate_unicorn_moves(l,r,c, state, player)
-                    elif tp == 'P':
-                        moves += generate_pawn_moves(l,r,c, state, player)
-    return moves
-def check_movable(self,l,r,c,state,player):
-        return check_position_validity(l,r,c) and ((player < 0 and state["board"] >= 0) or (player > 0 and state["board"] <= 0))
+    def get_possible_moves(state, player):
+        moves = []
+        for l in range(5):
+            for r in range(5):
+                for c in range(5):
+                    pi = RaumschachEnv.ids_to_pieces[state["board"][l][r][c]][0]
+                    if (pi.islower() and player == -1) or (pi.isupper() and player == 1):
+                        tp = pi.upper()
+                        if tp == 'K':
+                            moves += generate_king_moves(l,r,c, state, player)
+                        elif tp == 'Q':
+                            moves += generate_queen_moves(l,r,c, state, player)
+                        elif tp == 'R':
+                            moves += generate_rook_moves(l,r,c, state, player)
+                        elif tp == 'B':
+                            moves += generate_bishop_moves(l,r,c, state, player)
+                        elif tp == 'N':
+                            moves += generate_knight_moves(l,r,c, state, player)
+                        elif tp == 'U':
+                            moves += generate_unicorn_moves(l,r,c, state, player)
+                        elif tp == 'P':
+                            moves += generate_pawn_moves(l,r,c, state, player)
+        return moves
 
-def check_takable_pawn(self,l,r,c,state,player):
-    return check_position_validity(l,r,c) and (player < 0 and state["board"] > 0) or (player > 0 and state["board"] < 0)
+    def check_movable(self,l,r,c,state,player):
+            return check_position_validity(l,r,c) and ((player < 0 and state["board"] >= 0) or (player > 0 and state["board"] <= 0))
 
-def check_movable_pawn(self,l,r,c,state,player):
-     return check_position_validity(l,r,c) and state["board"] == 0
+    def check_takable_pawn(self,l,r,c,state,player):
+        return check_position_validity(l,r,c) and (player < 0 and state["board"] > 0) or (player > 0 and state["board"] < 0)
 
-def generate_king_moves(self, l, r, c, state, player):
-    dif_array =   [(dx,dy,dz) for dx in range(-1,2) for dy in range(-1,2) for dz in range(-1,2)].remove((0,0,0))
-    moves = []
-    for (dx,dy,dz) in dif_array:
-        if check_movable(l + dx, r + dy, c + dz, state, player):
-            moves += [(state["board"][l][r][c], (l + dx, r + dy, c + dz))]
-    return moves
+    def check_movable_pawn(self,l,r,c,state,player):
+        return check_position_validity(l,r,c) and state["board"] == 0
 
-def generate_knight_moves(self, l,r,c,state, player):
-    dif_array = [(0,2,3), (0,3,2), (0,-3,2), (0,2,-3), (0,3,-2), (0,-2,3), (0,-3,-2), (0,-2,-3),(2,0,3), (3,0,2), (-3,0,2), (2,0,-3), (3,0,-2), (-2,0,3), (-3,0,-2), (-2,0,-3), (2,3,0), (3,2,0), (-3,2,0), (2,-3,0), (3,-2,0), (-2,3,0), (-3,-2,0), (-2,-3,0)]
-    moves = []
-    for (dx,dy,dz) in dif_array:
-        if check_movable(l + dx, r + dy, c + dz, state, player):
-            moves += [(state["board"][l][r][c], (l + dx, r + dy, c + dz))]
-    return moves
+    def generate_king_moves(self, l, r, c, state, player):
+        dif_array =   [(dx,dy,dz) for dx in range(-1,2) for dy in range(-1,2) for dz in range(-1,2)].remove((0,0,0))
+        moves = []
+        for (dx,dy,dz) in dif_array:
+            if check_movable(l + dx, r + dy, c + dz, state, player):
+                moves += [(state["board"][l][r][c], (l + dx, r + dy, c + dz))]
+        return moves
 
-def generate_pawn_moves(self, l,r,c,state, player):
-    p = player
-    adv = [(1,0,0), (0,1,0)]
-    take = [(1,1,0), (0,1,1), (0,1,-1), (1,0,-1), (1,0,1)]
-    moves = []
-    for (dx,dy,dz) in adv:
-        if check_movable_pawn(l + p*dx, r + p*dy, c + p*dz, state, player):
-            moves += [(state["board"][l][r][c], (l + dx, r + dy, c + dz))]
-    for (dx,dy,dz) in take:
-        if check_takable_pawn(l + p*dx, r + p*dy, c + p*dz, state, player):
-            moves += [(state["board"][l][r][c], (l + p*dx, r + p*dy, c + p*dz))]
-    return moves
+    def generate_knight_moves(self, l,r,c,state, player):
+        dif_array = [(0,2,3), (0,3,2), (0,-3,2), (0,2,-3), (0,3,-2), (0,-2,3), (0,-3,-2), (0,-2,-3),(2,0,3), (3,0,2), (-3,0,2), (2,0,-3), (3,0,-2), (-2,0,3), (-3,0,-2), (-2,0,-3), (2,3,0), (3,2,0), (-3,2,0), (2,-3,0), (3,-2,0), (-2,3,0), (-3,-2,0), (-2,-3,0)]
+        moves = []
+        for (dx,dy,dz) in dif_array:
+            if check_movable(l + dx, r + dy, c + dz, state, player):
+                moves += [(state["board"][l][r][c], (l + dx, r + dy, c + dz))]
+        return moves
 
-def generate_queen_moves(self,l,r,c,state, player):
-    dif_array =   [(dx,dy,dz) for dx in range(-1,2) for dy in range(-1,2) for dz in range(-1,2)].remove((0,0,0))
-    moves = []
-    for (dx,dy,dz) in dif_array:
-        for k in range(1, 4):
-            (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
-            if check_movable(nx,ny,nz,state, player):
-                moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
-            elif not check_position_validity(nx,ny,nz):
-                break
-    return moves
+    def generate_pawn_moves(self, l,r,c,state, player):
+        p = player
+        adv = [(1,0,0), (0,1,0)]
+        take = [(1,1,0), (0,1,1), (0,1,-1), (1,0,-1), (1,0,1)]
+        moves = []
+        for (dx,dy,dz) in adv:
+            if check_movable_pawn(l + p*dx, r + p*dy, c + p*dz, state, player):
+                moves += [(state["board"][l][r][c], (l + dx, r + dy, c + dz))]
+        for (dx,dy,dz) in take:
+            if check_takable_pawn(l + p*dx, r + p*dy, c + p*dz, state, player):
+                moves += [(state["board"][l][r][c], (l + p*dx, r + p*dy, c + p*dz))]
+        return moves
 
-def generate_rook_moves(self, l,r,c,state, player):
-    dif_array = [(1,0,0), (-1,0,0), (0,1,0), (0,-1,0), (0,0,1), (0,0,-1)]
-    moves = []
-    for (dx,dy,dz) in dif_array:
-        for k in range(1, 4):
-            (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
-            if check_movable(nx,ny,nz,state, player):
-                moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
-            elif not check_position_validity(nx,ny,nz):
-                break
-    return moves
-def generate_bishop_moves(self, l,r,c,state, player):
-    dif_array = [(1,1,0), (1,-1,0), (-1,1,0), (-1,-1,0), (1,0,1), (1,0,-1), (-1,0,1), (-1,0,-1), (0,1,1), (0,-1,1), (0,1,-1), (0,-1,-1)]
-    moves = []
-    for (dx,dy,dz) in dif_array:
-        for k in range(1, 4):
-            (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
-            if check_movable(nx,ny,nz,state, player):
-                moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
-            elif not check_position_validity(nx,ny,nz):
-                break
-    return moves
+    def generate_queen_moves(self,l,r,c,state, player):
+        dif_array =   [(dx,dy,dz) for dx in range(-1,2) for dy in range(-1,2) for dz in range(-1,2)].remove((0,0,0))
+        moves = []
+        for (dx,dy,dz) in dif_array:
+            for k in range(1, 4):
+                (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
+                if check_movable(nx,ny,nz,state, player):
+                    moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
+                elif not check_position_validity(nx,ny,nz):
+                    break
+        return moves
 
-def generate_unicorn_moves(self, l,r,c,state, player):
-    dif_array = [(1,1,1), (1,1,-1), (1,-1,1), (1,-1,-1), (-1,1,1), (-1,1,-1), (-1,-1,1), (-1,-1,-1)]
-    moves = []
-    for (dx,dy,dz) in dif_array:
-        for k in range(1, 4):
-            (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
-            if check_movable(nx,ny,nz,state, player):
-                moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
-            elif not check_position_validity(nx,ny,nz):
-                break
-    return moves
+    def generate_rook_moves(self, l,r,c,state, player):
+        dif_array = [(1,0,0), (-1,0,0), (0,1,0), (0,-1,0), (0,0,1), (0,0,-1)]
+        moves = []
+        for (dx,dy,dz) in dif_array:
+            for k in range(1, 4):
+                (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
+                if check_movable(nx,ny,nz,state, player):
+                    moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
+                elif not check_position_validity(nx,ny,nz):
+                    break
+        return moves
+    def generate_bishop_moves(self, l,r,c,state, player):
+        dif_array = [(1,1,0), (1,-1,0), (-1,1,0), (-1,-1,0), (1,0,1), (1,0,-1), (-1,0,1), (-1,0,-1), (0,1,1), (0,-1,1), (0,1,-1), (0,-1,-1)]
+        moves = []
+        for (dx,dy,dz) in dif_array:
+            for k in range(1, 4):
+                (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
+                if check_movable(nx,ny,nz,state, player):
+                    moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
+                elif not check_position_validity(nx,ny,nz):
+                    break
+        return moves
+
+    def generate_unicorn_moves(self, l,r,c,state, player):
+        dif_array = [(1,1,1), (1,1,-1), (1,-1,1), (1,-1,-1), (-1,1,1), (-1,1,-1), (-1,-1,1), (-1,-1,-1)]
+        moves = []
+        for (dx,dy,dz) in dif_array:
+            for k in range(1, 4):
+                (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
+                if check_movable(nx,ny,nz,state, player):
+                    moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
+                elif not check_position_validity(nx,ny,nz):
+                    break
+        return moves
 
