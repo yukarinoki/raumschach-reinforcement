@@ -35,7 +35,7 @@ uniDict = {
 }
 def check_position_validity(l,r,c):
     arr = [0,1,2,3,4]
-    return l in arr and r in arr and c in arr
+    return (l in arr) and (r in arr) and (c in arr)
 
 def make_random_policy(np_random):
     def random_policy(state):
@@ -46,6 +46,7 @@ def make_random_policy(np_random):
             return 'resign'
         else:
             return np.random.choice(moves)
+    
     return random_policy
 
 class RaumschachEnv(gym.Env) :
@@ -54,8 +55,8 @@ class RaumschachEnv(gym.Env) :
         self.log = log
         
         # One action (for each board position) x (no. of pieces), 2xcastles, offer/accept draw and resign
-        self.observation_space = spaces.Box(-20,20, (5,5,5)) # board 5x5x5
-        self.action_space = spaces.Discrete(125*20 + 5)
+        self.observation_space = spaces.Box(-19,19, (5,5,5)) # board 5x5x5
+        self.action_space = spaces.Discrete(125*19 + 1)
 
         self.player = player_color # define player 
         self.opponent = opponent # define opponent
@@ -105,7 +106,7 @@ class RaumschachEnv(gym.Env) :
         self.state['board'] = np.array([[[pieces_to_ids[x] for x in row] for row in layer] for layer in board])
         self.state['prev_board'] = copy(self.state['board'])
         return self.state
-
+    
     def _render(self, mode='human', close=False):
         cb = self.state['board'] 
         layer_index_arr = ['A', 'B', 'C', 'D', 'E']
@@ -123,6 +124,7 @@ class RaumschachEnv(gym.Env) :
                 print("\n")
             print("\n")   
         print("//// board rendering  ////")
+    
     def get_possible_moves(self, state, player):
         moves = []
         for l in range(5):
@@ -132,23 +134,23 @@ class RaumschachEnv(gym.Env) :
                     if (pi.islower() and player == -1) or (pi.isupper() and player == 1):
                         tp = pi.upper()
                         if tp == 'K':
-                            moves += generate_king_moves(l,r,c, state, player)
+                            moves += self.generate_king_moves(l,r,c, state, player)
                         elif tp == 'Q':
-                            moves += generate_queen_moves(l,r,c, state, player)
+                            moves += self.generate_queen_moves(l,r,c, state, player)
                         elif tp == 'R':
-                            moves += generate_rook_moves(l,r,c, state, player)
+                            moves += self.generate_rook_moves(l,r,c, state, player)
                         elif tp == 'B':
-                            moves += generate_bishop_moves(l,r,c, state, player)
+                            moves += self.generate_bishop_moves(l,r,c, state, player)
                         elif tp == 'N':
-                            moves += generate_knight_moves(l,r,c, state, player)
+                            moves += self.generate_knight_moves(l,r,c, state, player)
                         elif tp == 'U':
-                            moves += generate_unicorn_moves(l,r,c, state, player)
+                            moves += self.generate_unicorn_moves(l,r,c, state, player)
                         elif tp == 'P':
-                            moves += generate_pawn_moves(l,r,c, state, player)
+                            moves += self.generate_pawn_moves(l,r,c, state, player)
         return moves
 
     def check_movable(self,l,r,c,state,player):
-            return check_position_validity(l,r,c) and ((player < 0 and state["board"] >= 0) or (player > 0 and state["board"] <= 0))
+        return check_position_validity(l,r,c) and ((player < 0 and state["board"] >= 0) or (player > 0 and state["board"] <= 0))
 
     def check_takable_pawn(self,l,r,c,state,player):
         return check_position_validity(l,r,c) and (player < 0 and state["board"] > 0) or (player > 0 and state["board"] < 0)
@@ -157,10 +159,11 @@ class RaumschachEnv(gym.Env) :
         return check_position_validity(l,r,c) and state["board"] == 0
 
     def generate_king_moves(self, l, r, c, state, player):
-        dif_array =   [(dx,dy,dz) for dx in range(-1,2) for dy in range(-1,2) for dz in range(-1,2)].remove((0,0,0))
+        dif_array =  [(dx,dy,dz) for dx in range(-1,2) for dy in range(-1,2) for dz in range(-1,2)]
+        dif_array.remove((0,0,0))
         moves = []
         for (dx,dy,dz) in dif_array:
-            if check_movable(l + dx, r + dy, c + dz, state, player):
+            if self.check_movable(l + dx, r + dy, c + dz, state, player):
                 moves += [(state["board"][l][r][c], (l + dx, r + dy, c + dz))]
         return moves
 
@@ -208,6 +211,7 @@ class RaumschachEnv(gym.Env) :
                 else:
                     break
         return moves
+
     def generate_bishop_moves(self, l,r,c,state, player):
         dif_array = [(1,1,0), (1,-1,0), (-1,1,0), (-1,-1,0), (1,0,1), (1,0,-1), (-1,0,1), (-1,0,-1), (0,1,1), (0,-1,1), (0,1,-1), (0,-1,-1)]
         moves = []
