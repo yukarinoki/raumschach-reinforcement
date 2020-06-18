@@ -193,7 +193,7 @@ class RaumschachEnv(gym.Env) :
                 (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
                 if check_movable(nx,ny,nz,state, player):
                     moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
-                elif not check_position_validity(nx,ny,nz):
+                else:
                     break
         return moves
 
@@ -205,7 +205,7 @@ class RaumschachEnv(gym.Env) :
                 (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
                 if check_movable(nx,ny,nz,state, player):
                     moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
-                elif not check_position_validity(nx,ny,nz):
+                else:
                     break
         return moves
     def generate_bishop_moves(self, l,r,c,state, player):
@@ -216,7 +216,7 @@ class RaumschachEnv(gym.Env) :
                 (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
                 if check_movable(nx,ny,nz,state, player):
                     moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
-                elif not check_position_validity(nx,ny,nz):
+                else:
                     break
         return moves
 
@@ -228,7 +228,7 @@ class RaumschachEnv(gym.Env) :
                 (nx, ny, nz) = (l + k*dx, r + k*dy,c + k*dz)
                 if check_movable(nx,ny,nz,state, player):
                     moves += [(state["board"][nx][ny][nz], (l + dx, r + dy, c + dz))]
-                elif not check_position_validity(nx,ny,nz):
+                else:
                     break
         return moves
 
