@@ -179,7 +179,7 @@ class RaumschachEnv(gym.Env) :
         moves = []
         for (dx,dy,dz) in adv:
             if check_movable_pawn(l + p*dx, r + p*dy, c + p*dz, state, player):
-                moves += [(state["board"][l][r][c], (l + dx, r + dy, c + dz))]
+                moves += [(state["board"][l][r][c], (l + p*dx, r + p*dy, c + p*dz))]
         for (dx,dy,dz) in take:
             if check_takable_pawn(l + p*dx, r + p*dy, c + p*dz, state, player):
                 moves += [(state["board"][l][r][c], (l + p*dx, r + p*dy, c + p*dz))]
